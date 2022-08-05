@@ -26,25 +26,44 @@ router.get("/:id", (req, res, next) => {
   pieRepo.getById(
     id,
     (data) => {
-      if(data) {
+      if (data) {
         res.status(200).json({
-          'status': 200,
-          'statusText': "OK",
-          'message': "All pies retrieved",
-          'data': data,
+          status: 200,
+          statusText: "OK",
+          message: "All pies retrieved",
+          data: data,
         });
       } else {
         res.status(404).json({
-          'status': 404,
-          'statusText': "Not Found",
-          'message': `The pie ${req.params.id} could not be found`,
-          'error': {
-            'code': 'NOT_FOUND',
-            'message': `The pie ${req.params.id} could not be found` 
+          status: 404,
+          statusText: "Not Found",
+          message: `The pie ${req.params.id} could not be found`,
+          error: {
+            code: "NOT_FOUND",
+            message: `The pie ${req.params.id} could not be found`,
           },
         });
       }
-      
+    },
+    (err) => {
+      next(err);
+    }
+  );
+});
+
+router.get("/api/search", (req, res, next) => {
+  let searchObj = {
+    id: req.query.id,
+    name: req.query.name,
+  };
+  pieRepo.search(
+    searchObj,
+    (data) => {
+      res.status(200).json({
+        status: 200,
+        statusText: 'OK',
+        message: ''
+      })
     },
     (err) => {
       next(err);

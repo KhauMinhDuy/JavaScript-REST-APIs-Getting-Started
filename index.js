@@ -96,12 +96,12 @@ router.put("/:id", (req, res, next) => {
       pieRepo.update(
         id,
         req.body,
-        (data) => {
+        (_data) => {
           res.status(200).json({
             status: 200,
             statusText: "OK",
             message: `Pie ${id} updated.`,
-            data: data,
+            data: _data,
           });
         },
         (err) => {
@@ -120,6 +120,84 @@ router.put("/:id", (req, res, next) => {
       });
     }
   });
+});
+
+router.delete("/:id", (req, res, next) => {
+  let id = Number.parseInt(req.params.id);
+  pieRepo.getById(
+    id,
+    (data) => {
+      if (data) {
+        pieRepo.delete(
+          id,
+          (_data) => {
+            res.status(200).json({
+              status: 200,
+              statusText: "OK",
+              message: `The pie ${id} is deleted`,
+              data: `Pie ${id} deleted`,
+            });
+          },
+          (err) => {
+            next(err);
+          }
+        );
+      } else {
+        res.status(404).json({
+          status: 404,
+          statusText: "Not Found",
+          message: `The pie ${id} could not be found`,
+          error: {
+            code: "NOT_FOUND",
+            message: `The pie ${id} could not be found`,
+          },
+        });
+      }
+    },
+    (err) => {
+      next(err);
+    }
+  );
+});
+
+router.patch("/:id", (req, res, next) => {
+  const id = Number.parseInt(req.params.id);
+  pieRepo.getById(
+    id,
+    (data) => {
+      console.log(data);
+      if (data) {
+        pieRepo.update(
+          id,
+          req.body,
+          (_data) => {
+            res.status(200).json({
+              status: 200,
+              statusText: "OK",
+              message: `The pie ${id} patched`,
+              data: _data,
+            });
+          },
+          (_err) => {
+            next(_err);
+          }
+        );
+      } else {
+        res.status(404).json({
+          status: 404,
+          statusText: "Not Found",
+          message: `The pie ${id} could not be found`,
+          error: {
+            code: "NOT_FOUND",
+            message: `The pie ${id} could not be found`,
+          },
+        });
+      }
+    },
+    (err) => {
+      next(err);
+    }
+  );
 });
 
 app.use(express.json());

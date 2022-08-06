@@ -89,6 +89,39 @@ router.post("/", (req, res, next) => {
   );
 });
 
+router.put("/:id", (req, res, next) => {
+  const id = Number.parseInt(req.params.id);
+  pieRepo.getById(id, (data) => {
+    if (data) {
+      pieRepo.update(
+        id,
+        req.body,
+        (data) => {
+          res.status(200).json({
+            status: 200,
+            statusText: "OK",
+            message: `Pie ${id} updated.`,
+            data: data,
+          });
+        },
+        (err) => {
+          next(err);
+        }
+      );
+    } else {
+      res.status(404).json({
+        status: 404,
+        statusText: "Not Found",
+        message: `The pie ${id} could not be found.`,
+        error: {
+          code: "NOT_FOUND",
+          message: `The pie ${id} could not be found.`,
+        },
+      });
+    }
+  });
+});
+
 app.use(express.json());
 app.use("/api/", router);
 

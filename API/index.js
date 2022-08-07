@@ -1,5 +1,6 @@
 let express = require("express");
 let app = express();
+let cors = require('cors');
 
 let pieRepo = require("./repos/pieRepo");
 const errorHelpers = require('./helpers/errorHelpers');
@@ -202,6 +203,7 @@ router.patch("/:id", (req, res, next) => {
 });
 
 app.use(express.json());
+app.use(cors());
 app.use("/api/", router);
 
 app.use(errorHelpers.logErrorConsole);

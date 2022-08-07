@@ -2,6 +2,7 @@ let express = require("express");
 let app = express();
 
 let pieRepo = require("./repos/pieRepo");
+const errorHelpers = require('./helpers/errorHelpers');
 
 let router = express.Router();
 
@@ -200,29 +201,13 @@ router.patch("/:id", (req, res, next) => {
   );
 });
 
-function errorHandler(err) {
-  return {
-    status: 500,
-    statusText: 'Internal Server Error',
-    message: err.message,
-    error: {
-      errno: err.errno,
-      call: err.syscall,
-      code: 'INTERNAL_SERVER_ERROR',
-      message: err.message
-    }
-  }
-}
-
 app.use(express.json());
 app.use("/api/", router);
-app.use(function (err, req, res, next) {
-  console.log(errorHandler(err));
-  next(err);
-})
-app.use(function (err, req, res, next) {
-  res.status(500).json(errorHandler(err))
-})
+
+app.use(errorHelpers.logErrorConsole);
+app.use(errorHelpers.logErrorFile);
+app.use(errorHelpers.clientErrorHandler);
+app.use(errorHelpers.errorHandler);
 
 const server = app.listen(5000, () => {
   console.log("Node Server is running on http://localhost:5000/...");
